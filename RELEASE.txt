@@ -1,0 +1,20 @@
+These are the steps I follow to do a public release:
+
+ 1. Test and make sure everything is working.
+ 2. Make sure CHANGES.txt is up to date, and note the
+    release date.
+ 3. Make sure the version number and date (in include.pl) are updated.
+ 4. Copy everything to resched-public/resched/
+ 5. cd to that directory
+ 7. In ajax.js, fix the basedir variable
+ 8. rm dbconfig.pl sitecode.pl *galion* *~
+ 9. cp sitecode.pl.sample sitecode.pl
+19. cd ..
+11. Create a version-number-named symlink to resched
+12. zip up the contents of the version-number-named
+    (symlink) directory into a zipfile also named
+    with the version number.
+13. cp /home/nathan/dbconfig-public.pl resched/dbconfig.pl
+    (This is the version that makes the demo work.)
+14. Update index.html to include the new version.
+15. Upload the new version to the CPAN via PAUSE.

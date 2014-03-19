@@ -4,10 +4,13 @@ These are the steps I follow to do a public release:
  2. Make sure CHANGES.txt is up to date, and note the
     release date.
  3. Make sure the version number and date (in include.pl) are updated.
- 4. Copy everything to resched-public/resched/
- 5. cd to that directory
+ 4. Update the POD as necessary.
+    pod2text -q none Galion-ReSched.POD > Galion-ReSched.txt
+    pod2html --title=App::GalionReSched Galion-ReSched.POD > Galion-ReSched.html
+ 5. Copy everything to resched-public/resched/
+ 6. cd to that directory
  7. In ajax.js, fix the basedir variable
- 8. rm dbconfig.pl sitecode.pl *galion* *~
+ 8. rm dbconfig.pl sitecode.pl do-release.pl *galion* *~
  9. cp sitecode.pl.sample sitecode.pl
 19. cd ..
 11. Create a version-number-named symlink to resched

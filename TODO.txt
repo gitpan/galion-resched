@@ -3,6 +3,8 @@ Desired Changes:
    IP authentication settings.
  * The admin interface currently does not preserve visual
    style and whatnot.  I should fix that.
+ * The admin interface should have the ability to edit the
+   list of available resource background colors.
  * The user should be able to set preferences for things
    like visual style and AJAX, which should then automatically
    kick in whenever they are logged in.  Ideally, it should

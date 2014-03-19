@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# -*- cperl -*-
 
 # This only needs to be run once, but it *should* be idempotent.
 
@@ -50,6 +51,7 @@ $db->prepare(
           requireinitials integer,
           requirenotes integer,
           autoex integer,
+          bgcolor integer,
           flags tinytext
      )"
     )->execute();
@@ -69,6 +71,113 @@ $db->prepare(
           alwaysbooknow integer
      )"
     )->execute();
+
+
+$db->prepare(
+    "CREATE TABLE IF NOT EXISTS
+     resched_booking_color (
+          id integer NOT NULL AUTO_INCREMENT PRIMARY KEY,
+          colorname     tinytext,
+          darkbg        tinytext,
+          lightbg       tinytext,
+          lowcontrastbg tinytext,
+          sitenote      tinytext,
+          flags         tinytext
+     )"
+    )->execute();
+my @bkcolor = getrecord('resched_booking_color');
+if (not scalar @schflag) {
+    addrecord('resched_booking_color', +{ colorname     => 'Blue A', #res16, res17, main internet
+                                          darkbg        => '#494975',
+                                          lightbg       => '#BBDDFF',
+                                          lowcontrastbg => '#7F99CC',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Yellow A', # res6, CR w.p.
+                                          darkbg        => '#7F7F00',
+                                          lightbg       => '#FFFFA0',
+                                          lowcontrastbg => '#DDDD7F',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Green A', # res4, res5, res19, res20
+                                          darkbg        => '#497549',
+                                          lightbg       => '#CCFFDD',
+                                          lowcontrastbg => '#55AA6F',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Red A', # res8, community room
+                                          darkbg        => '#7F0000',
+                                          lightbg       => '#FF9999',
+                                          lowcontrastbg => '#EE9999',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Purple A', #res15, res18, side internet
+                                          darkbg        => '#332060',
+                                          lightbg       => '#E3CCFF',
+                                          lowcontrastbg => '#AA99CC',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Brown A', # res10, staff room
+                                          darkbg        => '#7F4900',
+                                          lightbg       => '#FFCC99',
+                                          lowcontrastbg => '#EE9966',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Blue B',
+                                          darkbg        => '#1B3651',
+                                          lightbg       => '#B7C3DB',
+                                          lowcontrastbg => '#A8B2C7',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Yellow B', # res3, CR internet
+                                          darkbg        => '#3E3E00',
+                                          lightbg       => '#FFFFCC',
+                                          lowcontrastbg => '#DDDDAF',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Green B', # res7, typewriter
+                                          darkbg        => '#355535',
+                                          lightbg       => '#A0B4A7',
+                                          lowcontrastbg => '#89AA93',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Red B', # res9, board room
+                                          darkbg        => '#603333',
+                                          lightbg       => '#E3A4A4',
+                                          lowcontrastbg => '#996666',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Purple B', # res13, bball court
+                                          darkbg        => '#662251',
+                                          lightbg       => '#FFB9E4',
+                                          lowcontrastbg => '#D392C1',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Brown B', #res14, lecture hall
+                                          darkbg        => '#664422',
+                                          lightbg       => '#CCAA99',
+                                          lowcontrastbg => '#CCAA99',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Blue C', # res12, jukebox
+                                          darkbg        => '#224466',
+                                          lightbg       => '#99AACC',
+                                          lowcontrastbg => '#99AACC',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Yellow C',
+                                          darkbg        => '#5C5C1D',
+                                          lightbg       => '#FFFFBB',
+                                          lowcontrastbg => '#DDDD9F',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Green C', # res11, sandbox
+                                          darkbg        => '#446622',
+                                          lightbg       => '#AACC99',
+                                          lowcontrastbg => '#AACC99',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Red C',
+                                          darkbg        => '#500000',
+                                          lightbg       => '#FF8484',
+                                          lowcontrastbg => '#996666',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Purple C',
+                                          darkbg        => '#3B0046',
+                                          lightbg       => '#E293F0',
+                                          lowcontrastbg => '#916699',
+                                        });
+    addrecord('resched_booking_color', +{ colorname     => 'Brown C',
+                                          darkbg        => '#462800',
+                                          lightbg       => '#F5DBB8',
+                                          lowcontrastbg => '#998366',
+                                        });
+}
 
 
 $db->prepare(
@@ -259,45 +368,44 @@ $db->prepare(
 my @schcolor = getrecord('resched_staffsch_color');
 if (not scalar @schcolor) {
     my @color = (
-              ['#7F0000' => 'red'],
-              ['#007F00' => 'green'         => undef, 'disabled'],
-              ['#008800' => 'green'         => '#003300'],
-              ['#00007F' => 'blue'],
-              ['#600060' => 'violet'        => undef, 'disabled'],
-              ['#6C3461' => 'grape'],
-              ['#502000' => 'brown'         => undef, 'disabled'],
-              ['#006633' => 'turquoise'],
-              ['#505000' => 'ochre'],
-              ['#666666' => 'gray'],
-              ['#AA0000' => 'medium red'],
-              ['#980002' => 'blood red'     => undef, 'disabled'],
-              ['#FD3C06' => 'red orange'],
-              ['#00AA00' => 'medium green'  => undef, 'disabled'],
-              ['#02AB2E' => 'kelly green'   => '#003300'],
-              ['#0000AA' => 'medium blue'],
-              ['#0485D1' => 'cerulean'      => undef, 'disabled'],
-              ['#CC5500' => 'medium orange' => undef, 'disabled'],
-              ['#C04E01' => 'burnt orange'],
-              ['#7F007F' => 'magenta'],
-              ['#FFB07C' => 'peach'          => '#7F583E'],
-              ['#995500' => 'tan'            => undef, 'disabled'],
+              ['#7F0000' => 'red'           => '#AAAAAA' ],
+              ['#007F00' => 'green'         => '#AAAAAA' ],
+              ['#00007F' => 'blue'          => '#AAAAAA' ],
+              ['#600060' => 'violet'        => '#9C6DA5' ],
+              ['#6C3461' => 'grape'         => '#FFE0FF' ],
+              ['#502000' => 'brown'         => '#B9A281' ],
+              ['#006633' => 'turquoise'     => '#7F7F7F' ],
+              ['#505000' => 'ochre'         => '#7F7F7F' ],
+              ['#666666' => 'gray'          => '#7F7F7F' ],
+              ['#AA0000' => 'medium red'    => '#7F7F7F' ],
+              ['#980002' => 'blood red'     => '#FF6666' ],
+              ['#FD3C06' => 'red orange'    => '#FFD600' ],
+              ['#00AA00' => 'medium green'  => '#006600' ],
+              ['#02AB2E' => 'kelly green'   => '#FFFFCC' ],
+              ['#0000AA' => 'medium blue'   => '#7F7F7F' ],
+              ['#0485D1' => 'cerulean'      => '#AAAAAA' ],
+              ['#CC5500' => 'medium orange' => '#AAAAAA' ],
+              ['#C04E01' => 'burnt orange'  => '#4A0100' ],
+              ['#7F007F' => 'magenta'       => '#7F7F7F' ],
+              ['#FFB07C' => 'peach'          => '#502000'],
+              ['#995500' => 'tan'            => '#B9A281'],
               ['#AF884A' => 'yellow tan'     => '#574425'],
-              ['#9C6DA5' => 'lilac'],
-              ['#009955' => 'dark aqua'      => undef, 'disabled'],
-              ['#13EAC9' => 'aqua'],
+              ['#9C6DA5' => 'lilac'          => '#333333'],
+              ['#13EAC9' => 'aqua'           => '#666666'],
+              ['#3C7575' => 'aquamaroon'     => '#AAAAAA'],
               ['#677A04' => 'olive'          => 'black'],
-              ['#AE7181' => 'mauve'],
-              ['#7F4E1E' => 'milk chocolate'],
+              ['#AE7181' => 'mauve'          => '#555555'],
+              ['#7F4E1E' => 'milk chocolate' => '#7F7F7F'],
               ['#88B378' => 'sage green'     => '#003300'],
               ['#3D736E' => 'medium slate'   => '#203B39'],
-              ['#7F7F00' => 'medium ochre'   => undef, 'disabled'],
-              ['#999999' => 'medium gray'    => undef, 'disabled'],
-              ['#550000' => 'dark red'],
-              ['#005000' => 'dark green'     => undef, 'disabled'],
-              ['#0B5509' => 'forest green'],
-              ['#000055' => 'dark blue'],
-              ['#020035' => 'midnight'       => undef, 'disabled'],
-              ['#3D1C02' => 'dark chocolate'],
+              ['#7F7F00' => 'medium ochre'   => '#999999'],
+              ['#999999' => 'medium gray'    => '#444444'],
+              ['#550000' => 'dark red'       => '#7F7F7F'],
+              ['#005000' => 'dark green'     => '#00AA00'],
+              ['#0B5509' => 'forest green'   => '#7F7F7F'],
+              ['#000055' => 'dark blue'      => '#7F7F7F'],
+              ['#020035' => 'midnight'       => '#AAAAAA', 'disabled'],
+              ['#3D1C02' => 'dark chocolate' => '#7F7F7F'],
               ['#FFD600' => 'gold'           => 'black'],
               ['#FF796C' => 'salmon'         => 'black'],
               ['#75BBFD' => 'sky blue'       => 'black'],
@@ -308,45 +416,45 @@ if (not scalar @schcolor) {
               ['#FFFF00' => 'yellow'         => 'black'],
               ['#FFFFFF' => 'white'          => 'black'],
               ['#FBDD7E' => 'wheat'          => '#203B39'],
-              ['#330033' => 'dark purple'    => undef, 'disabled'],
-              ['#34013F' => 'dark violet'],
-              ['#380282' => 'indigo'],
-              ['#004020' => 'dark turquoise' => undef, 'disabled'],
-              ['#294D4A' => 'dark slate'],
-              ['#333300' => 'dark ochre'     => undef, 'disabled'],
-              ['#404040' => 'dark grey'      => undef, 'disabled'],
-              ['black'   => 'black'],
-              ['#FF3333' => 'bright red'     => 'black', 'disabled'],
-              ['#33FF33' => 'bright green'   => 'black'],
-              ['#3333FF' => 'bright blue'    => 'black', 'disabled'],
+              ['#330033' => 'dark purple'    => '#7F7F7F', 'disabled'],
+              ['#34013F' => 'dark violet'    => '#AAAAAA'],
+              ['#380282' => 'indigo'         => '#7F7F7F'],
+              ['#004020' => 'dark turquoise' => '#7F7F7F', 'disabled'],
+              ['#294D4A' => 'dark slate'     => '#7F7F7F', 'disabled'],
+              ['#333300' => 'dark ochre'     => '#7F7F7F', 'disabled'],
+              ['#404040' => 'dark grey'      => '#AAAAAA'],
+              ['black'   => 'black'          => '#AAAAAA'],
+              ['#FF3333' => 'bright red'     => 'black'],
+              ['#00FF00' => 'bright green'   => 'black'],
+              ['#3333FF' => 'bright blue'    => 'black'],
               ['#FF81C0' => 'kawaii pink'    => 'black'],
               ['#89FE05' => 'lime green'     => 'black'],
               ['#C79FEF' => 'lavender'       => 'black'],
               ['#FFFFC2' => 'cream'          => 'black'],
-              ['#FFF3DE' => 'paleface'],
+              ['#FFF3DE' => 'paleface'       => '#7F7F7F'],
               ['#A2CFFE' => 'baby blue'      => 'black', 'disabled'],
               ['#ACC2D9' => 'cloudy day'     => '#000033'],
               ['#FFFFAA' => 'light yellow'   => '#7F7F00'],
-              ['#8FFF9F' => 'mint'],
-              ['#AAA662' => 'khaki'          => '#333300'],
-              ['#AD8150' => 'light brown'    => '#333300', 'disabled'],
+              ['#8FFF9F' => 'mint'           => '#447F44'],
+              ['#AAA662' => 'khaki'          => '#333300', 'disabled'],
+              ['#AD8150' => 'light brown'    => '#333300'],
               ['#B9A281' => 'taupe'          => '#333300'],
               ['#5A7D9A' => 'steel blue'     => '#000033'],
-              ['#E7F0FF' => 'pastel blue'],
-              ['#E7FFE7' => 'pastel green'],
-              ['#FFE4E4' => 'pastel pink'],
-              ['#FFE0FF' => 'pastel purple'],
-              ['#FFFFCC' => 'pastel yellow'],
+              ['#E7F0FF' => 'pastel blue'    => '#7F7F7F'],
+              ['#E7FFE7' => 'pastel green'   => '#7F7F7F'],
+              ['#FFE4E4' => 'pastel pink'    => '#7F7F7F'],
+              ['#FFE0FF' => 'pastel purple'  => '#7F7F7F'],
+              ['#FFFFCC' => 'pastel yellow'  => '#7F7F7F'],
               ['#CA6641' => 'terra cotta'    => '#663320'],
-              ['#BE0119' => 'scarlet'],
+              ['#BE0119' => 'scarlet'        => '#7F7F7F'],
               ['#6A79F7' => 'cornflower'     => '#35407D'],
-              ['#FFCFDC' => 'pale pink'      => '#330000'],
-              ['#E17701' => 'pumpkin'],
-              ['#C875C4' => 'orchid'],
-              ['#01A049' => 'emerald'        => undef,     'disabled'],
-              ['#4A0100' => 'mahogany'       => 'DE0300'],
-              ['#DE7E5D' => 'dark peach'],
-              ['#048243' => 'jungle'],
+              ['#FFCFDC' => 'pale pink'      => '#FF81C0'],
+              ['#E17701' => 'pumpkin'        => '#333333'],
+              ['#C875C4' => 'orchid'         => '#333333'],
+              ['#01A049' => 'emerald'        => '#006600', 'disabled'],
+              ['#4A0100' => 'mahogany'       => '#DE7E5D'],
+              ['#DE7E5D' => 'dark peach'     => '#666666'],
+              ['#048243' => 'jungle'         => '#AAAAAA'],
     );
     for my $clr (@color) {
        my ($fg, $name, $shadow, $disabled) = @$clr;

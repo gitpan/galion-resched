@@ -1,4 +1,25 @@
 See also TODO.txt
+Version 0.9.5:
+  * Created the first version of Galion-ReSched.POD,
+    some rudimentary POD documentation, mostly intended
+    to help people find the software on search.cpan.org.
+  * Adjusted the list of default staff schedule colors.
+  * Added to the resched_resources table a new field,
+    bgcolor (integer), which is a foreign key into the
+    resched_booking_color table.  Sites upgrading from an
+    earlier version must add this field in order to use it.
+  * Running create-tables.pl populates resched_booking_color
+    with a selection of default colors, similar to the ones
+    in the default stylesheets.
+  * With the above change, it is no longer necessary to
+    manually edit the style sheets just to assign background
+    colors to resources.  Instead, you can now do this in
+    the admin interface.
+  * The resource background colors in the default style
+    sheets are deprecated and will be removed in a future
+    release.
+  * Automated the release process.
+  * Released 2014 March 18th.
 Version 0.9.4:
   * If the user successfully logs in with a hashed password,
     any old cleartext password is cleaned out.  In rare cases
@@ -43,7 +64,7 @@ Version 0.9.4:
   * Introduced a config variable for the salt length.
   * The admin interface now has the ability to edit user records.
     This has only been lightly tested; there may be bugs.
-  * Fixed a couple of bugs in the new staff schedule feature.
+  * Fixed a couple other bugs in the new staff schedule feature.
   * Released 2014 March 14th.
 Version 0.9.3:
   * Introduces the new "staff schedule" feature, a way to track
@@ -191,7 +212,8 @@ Version 0.8.5:
     was in use, preventing the user from logging in.
   * Introduced a simple script that can be run from a cron
     job to clean out old expired auth cookies if desired.
-    Currently this feature is untested.
+    Currently this feature is untested.  (It's also no
+    longer really needed as of version 0.9.4., q.v.)
   * Fixed a bug in program signup that caused incorrect flag
     inheritance and could potentially have caused other bugs
     down the line.
@@ -509,7 +531,8 @@ Version 0.6.9:
   * Added the getvariable and setvariable routines to db.pl
   * Added config.cgi to make it easier to set up these variables.
     The sysadmin can always chmod -x it if he's worried about
-    users messing it up.
+    users messing it up. (Note: this is no longer necessary as
+    of version 0.8.8, q.v.)
   * Added support for the following variables:  sysadmin_name,
     url_base (but, ajax.js still has it hardcoded), and
     sidebar_post_today
@@ -548,8 +571,7 @@ Version 0.6.5:
     Instead of listing individual resources (which you can get
     anyway by clicking the column headers) it now lists only the
     broad categories.  This makes the list considerably shorter,
-    which pulls Today above the fold in most cases.  See bug 167,
-    http://localhost/bugzilla/show_bug.cgi?id=187
+    which pulls Today above the fold in most cases.  See bug 167.
   * Deployed 2008 July 21.
 Version 0.6.4:
   * The table is now preceded by a line that tells the current
@@ -564,7 +586,6 @@ Version 0.6.3:
   * When a booking is created, the bookedfor name _as typed_ is
     preserved in the notes, in parentheses, if it does not match
     what actually goes into the bookedfor field (e.g. due to an alias).
-    http://10.0.0.21/bugzilla/show_bug.cgi?id=162
   * Adjusted the wording in a couple of error messages.
   * Updated handleResponse to call retrieveupdates() if it gets
     an updatecount element in the response.  Note that the retrieveupdates()
@@ -583,7 +604,6 @@ Version 0.6.3:
     created for one of the resources that you're currently
     looking at on a view page, within two minutes you'll
     get an updated view even if you don't do anything.
-    http://10.0.0.21/bugzilla/show_bug.cgi?id=165
   * Deployed 2008 Mar 18.    
 Version 0.6.2:
   * Fixed a bug in frequent user lookup that was causing no records to be

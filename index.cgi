@@ -984,9 +984,13 @@ sub newbooking {
         $cr
        </div>];
     }
+    my $bgfn     = ( darkonlight => 'lightbg', lightondark => 'darkbg', 'lowcontrast' => 'lowcontrastbg');
+    my $bgcolor  = $res{bgcolor}     ? getrecord('resched_booking_color', $res{bgcolor}) : undef;
+    my $stylesht = $input{usestyle} || 'lowcontrast';
+    my $styleatt = $bgcolor          ? qq[ style="background-color: $$bgcolor{$bgfn{$style}}"] : '';
     return (qq[
        <form action="./" method="POST" name="bookingform" class="res$res{id}">
-       <div class="res$res{id}">
+       <div class="res$res{id}"$styleatt>
        <!-- *** First, the stuff we already know: *** -->
        <input type="hidden" name="action"    value="makebooking" />
        <input type="hidden" name="when"      value="$input{when}" />

@@ -4,6 +4,7 @@
 $ENV{PATH}='';
 $ENV{ENV}='';
 
+use HTML::Entities;
 require "./forminput.pl";
 require "./include.pl";
 require "./auth.pl";
@@ -257,10 +258,15 @@ sub userlist {
 }
 
 sub reslist {
-  my @r = getrecord('resched_resources');
-  my @row = map {
-    my $r = $_;
-    my $s = getrecord('resched_schedules', $$r{schedule});
+  my @r       = getrecord('resched_resources');
+  my @row     = map {
+    my $r     = $_;
+    my $s     = getrecord('resched_schedules', $$r{schedule});
+    my $bg    = $$r{bgcolor} ? (scalar getrecord('resched_booking_color', $$r{bgcolor})) : undef;
+    my $clr   = (ref $bg) ? encode_entities($$bg{colorname}) : '';
+    my $css   = $input{usestyle} || 'lowcontrast';
+    my %bgfn  = ( darkonlight => 'lightbg', lightondark => 'darkbg', 'lowcontrast' => 'lowcontrastbg');
+    my $style = (ref $bg) ? (qq[ style="background-color: $$bg{$bgfn{$css}}"]) : '';
     my $flags = join ', ', map { my $f = $resflag{$_};
                                  my $prefix = $$f[0] ? qq[$$f[0] - ] : '';
                                  qq[<abbr title="$$f[2]">$prefix$$f[1]</abbr>]
@@ -268,12 +274,12 @@ sub reslist {
                                   (grep { $$r{$_} } qw(requireinitials requirenotes autoex)));
     qq[<tr><td><a href="admin.cgi?action=resedit&amp;resource=$$r{id}">$$r{name}</a></td>
            <td><a href="admin.cgi?action=schedit&amp;schedule=$$r{schedule}">$$s{name}</a></td>
-           <td>$$r{switchwith}</td><td>$$r{showwith}</td><td>$$r{combine}</td>
+           <td>$$r{switchwith}</td><td>$$r{showwith}</td><td>$$r{combine}</td><td class="colorsample"$style>$clr</td>
            <td>$flags</td></tr>]
   } @r;
   return (qq[
   <table class="table list" id="resourcelist"><thead>
-     <tr><th>Resource</th><th>Schedule</th><th>Switch With</th><th>Show With</th><th>Combine With</th><th>Flags and Such</th></tr>
+     <tr><th>Resource</th><th>Schedule</th><th>Switch With</th><th>Show With</th><th>Combine With</th><th>bg</th><th>Flags and Such</th></tr>
   </thead><tbody>
      ] . (join "\n     ", @row) . qq[</tbody></table>
   ], 'List of Resources - Galion ReSched');
@@ -297,6 +303,11 @@ sub resform {
                 . (($$res{flags} =~ "$f") ? ' checked="checked"' : '') . qq[ />
             <label for="cbflag$f" title="$resflag{$f}[2]">$resflag{$f}[1]</label></div>]
   } sort { $a cmp $b } grep { /^.$/ } keys %resflag;
+  my $bgform = include::orderedoptionlist('bgcolor', [map {
+    my $clr = $_;
+    my $note = $$clr{sitenote} ? qq[ - $$clr{sitenote}] : '';
+    [ $$clr{id} => encode_entities(qq[$$clr{colorname}$note]) ]
+  } getrecord('resched_booking_color')], $$res{bgcolor});
   return (qq[<form id="resourceform" action="admin.cgi" method="post">
      <input type="hidden" name="action" value="$action" />$idfield
      <table><tbody>
@@ -317,6 +328,9 @@ sub resform {
        <tr><th><label for="combine">Combine With</label></th>
            <td><input  id="combine" name="combine" type="text" size="20" value="$$res{combine}" /></td>
            <!-- td>If you leave this blank, the first category containing the resource will be used.</td --></tr>
+       <tr><th><label for="bgcolor">Background Color</label></th>
+           <td>$bgform</td>
+           <td>Background color to use on schedules for this resource.</td></tr>
        <tr><th>Flags and Such</th>
            <td><div><input  id="requireinitials" name="requireinitials" type="checkbox"] . ($$res{requireinitials} ? ' checked="checked"' : '') . qq[ />
                     <label for="requireinitials" title="$resflag{requireinitials}[2]">Require Initials</label></div>
@@ -339,7 +353,9 @@ sub resupdate {
   $$res{schedule} = $$sch{id} if ref $sch;
   $$res{$_} = encode_entities($input{$_}) for qw(switchwith showwith combine);
   $$res{$_} = ($input{$_} ? 1 : 0) for qw(requireinitials requirenotes autoex);
-  $$res{flags} = join '', sort { $a cmp $b } grep { $input{'flag' . $_} } grep { /^.$/ } keys %resflag;
+  $$res{flags}   = join '', sort { $a cmp $b } grep { $input{'flag' . $_} } grep { /^.$/ } keys %resflag;
+  my $bg = getrecord('resched_booking_color', include::getnum('bgcolor'));
+  $$res{bgcolor} = $bg ? $$bg{id} : 0;
   updaterecord('resched_resources', $res);
   return resform();
 }
@@ -362,6 +378,8 @@ sub rescreate {
             'Duplicate Resource Name')
       unless getvariable('resched', 'allow_duplicate_names');
   }
+  my $bg = getrecord('resched_booking_color', include::getnum('bgcolor'));
+  $$res{bgcolor} = $bg ? $$bg{id} : 0;
   my $result = addrecord('resched_resources', $res);
   $input{id} = $db::added_record_id;
   return resform();
